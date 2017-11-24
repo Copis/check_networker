@@ -39,9 +39,17 @@ $lastday = $today = Get-Date -Format 'yyy-MM-dd*'
 
 $failedjobs = Get-NWJobgroup | where { $_.endTime -Like $lastday -or $_.endTime -Like $today -and $_.type -Match 'workflow job' -and $_.completionStatus -NotMatch 'Succeeded'}
 
-foreach ($job in $failedjobs) {
-    $res = $job.command -match "-p (?<policy>.*) -w (?<workflow>.*) -L"
-    $policy = $matches['policy']
-    $wkflow = $matches['workflow']
-    Write-Host "Policy:"$policy" Workflow: "$wkflow
+if ($failedjobs -eq $null) {
+	Write-Host "Ok - All backup copies have been successfully completed"
+	exit $OK
+}
+else {
+	foreach ($job in $failedjobs) {
+		$res = $job.command -match "-p (?<policy>.*) -w (?<workflow>.*) -L"
+		$policy = $matches['policy']
+		$wkflow = $matches['workflow']
+		$failed += "Policy:"+$policy+" Workflow: "+$wkflow
+    }
+	Write-Host $failed
+	exit $CRITICAL
 }
