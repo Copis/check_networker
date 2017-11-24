@@ -7,14 +7,23 @@ Changeme
 
 # Parameters
 Param(
-  [string]$server,
-  [string]$user,
-  [string]$password,
-  [string]$RestToolkitPath
+	[string]$server,
+	[string]$user,
+	[string]$password,
+	[string]$RestToolkitPath
 )
 
+# Check Parameters
+if (($server -eq '') -or ($user -eq '') -or ($password -eq '')) {
+	Write-Host "You must set server, user and password"
+	exit $UNKNOWN
+}
+
 # Import NWPSRestToolkit
-import-module C:\PowerShellScripts\NWPSRestToolKit\NWPSRestToolKit.psd1
+if ($RestToolkitPath -eq '') {
+	$RestToolkitPath = $pwd.Path+'\NWPSRestToolKit\NWPSRestToolKit.psd1'
+}
+import-module $RestToolKitPath
 
 # States
 $OK = 0
